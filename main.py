@@ -280,9 +280,10 @@ class scanWindow(Gtk.Window):
         label_empty_space_3=Gtk.Label("\n")
 
         # SSID List
-        self.command_essid="/bin/iw wlp4s0 scan | egrep 'SSID:' | awk '{print $2}'"
+        
+        self.command_essid="gksudo /bin/iw {} scan | egrep 'SSID:' | awk '{}'".format(interface, "{print $2}")
         output_essid= os.popen(self.command_essid).read()
-        print("\n"+output_essid+"\n")
+#        print("\n"+output_essid+"\n")
         self.box_outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
 
         self.listbox = Gtk.ListBox()
@@ -306,8 +307,8 @@ class scanWindow(Gtk.Window):
             bssid_length = '{0,18}'
             self.ssid= self.selection_listbox
             try:
-                self.bssid= os.popen("iw {} scan | grep -w -B10 '{}' | grep 'BSS' | grep -E -o '^BSS.{}' | grep -oP '^BSS \K.*'".format(interface, self.selection_listbox, bssid_length)).read()
-                self.channel= os.popen("iw {} scan | grep -w -A999 {} | grep -m 1 -E 'DS Parameter set: channel' | grep -oP 'DS Parameter set: channel \K.*'".format(interface, self.selection_listbox)).read()
+                self.bssid= os.popen("gksudo iw {} scan | grep -w -B999 '{}' | grep -m 1 'BSS' | grep -E -o '^BSS.{}' | grep -oP '^BSS \K.*'".format(interface, self.selection_listbox, bssid_length)).read()
+                self.channel= os.popen("gksudo iw {} scan | grep -w -A999 {} | grep -m 1 -E 'DS Parameter set: channel' | grep -oP 'DS Parameter set: channel \K.*'".format(interface, self.selection_listbox)).read()
                 pass
             except Exception as Thread:
                 raise Thread
@@ -316,7 +317,6 @@ class scanWindow(Gtk.Window):
             self.label_bssid_output.set_text(self.bssid)
             self.label_channel_output.set_text(self.channel)
             return self.selection_listbox, self.ssid, self.bssid, self.channel
-
 
 
 
@@ -344,23 +344,23 @@ class scanWindow(Gtk.Window):
 
         # Go to Airodump-ng Window
         self.button_airodumpwindow=Gtk.Button("Airodump-ng")
-        self.button_airodumpwindow.connect("clicked", self.Gotoairodumpwindow)
+        self.button_airodumpwindow.connect("clicked", self.Gotoairodumpwindow, interface)
 
 
         # grid
         grid.attach(self.button_mainwindow, 0, 1, 1, 1)
         grid.attach(button_scan, 0, 2, 1, 1)
         grid.attach(self.label_ssid, 0, 9, 1, 1)
-        grid.attach(self.label_ssid_output, 1, 9, 1, 1)
-        grid.attach(self.label_bssid, 0, 10, 1, 1)
-        grid.attach(self.label_bssid_output, 1, 10, 1, 1)
-        grid.attach(self.label_channel, 0, 11, 1, 1)
-        grid.attach(self.label_channel_output, 1, 11, 1, 1)
+        grid.attach(self.label_ssid_output, 0, 10, 1, 1)
+        grid.attach(self.label_bssid, 0, 11, 1, 1)
+        grid.attach(self.label_bssid_output, 0, 12, 1, 1)
+        grid.attach(self.label_channel, 0, 13, 1, 1)
+        grid.attach(self.label_channel_output, 0, 14, 1, 1)
         grid.attach(label_empty_space, 3, 5, 1, 1)
         grid.attach(label_empty_space_2, 0, 8, 1, 1)
-        grid.attach(label_empty_space_3, 0, 12, 1, 1)
+        grid.attach(label_empty_space_3, 0, 16, 1, 1)
         grid.attach(self.box_outer, 0,7,1,1)
-        grid.attach(self.button_airodumpwindow, 0, 13, 1, 1)
+        grid.attach(self.button_airodumpwindow, 0, 16, 1, 1)
 
     # mainwindow button | functionality
     def Gotomainwindow(self, button):
@@ -369,22 +369,21 @@ class scanWindow(Gtk.Window):
         self.hide()
     
     # airodumpWindow button | functionality
-    def Gotoairodumpwindow(self, button):
-        airodumpwindow = airodumpWindow(ssid, bssid, channel)
+    def Gotoairodumpwindow(self, button, interface):
+        airodumpwindow = airodumpWindow(interface, self.ssid, self.bssid, self.channel)
         airodumpwindow.show_all()
         self.hide()
     
     # scan  button | functionality
     def whenbutton_scan_clicked(self, button, grid, interface):
-        self.hide()
-        scanwindow = scanWindow(interface)
-        scanwindow.show_all()
-        print("hi")
+            self.hide()
+            scanwindow = scanWindow(interface)
+            scanwindow.show_all()
 
 #  Airodump-ng Window
 class airodumpWindow(Gtk.Window):
 
-    def __init__(self, interface):
+    def __init__(self, interface, ssid, bssid, channel):
 
         Gtk.Window.__init__(self, title="aircrack-ng GUI | Airodump-ng Window")
         self.connect("destroy", Gtk.main_quit)
@@ -402,6 +401,131 @@ class airodumpWindow(Gtk.Window):
         label_empty_space=Gtk.Label("\n")
         label_empty_space_2=Gtk.Label("\n")
 
+        # Selected AP info
+        self.label_ssid=Gtk.Label(label="SSID:")
+        self.label_ssid_output=Gtk.Label(label=ssid)
+        self.label_bssid=Gtk.Label(label="BSSID:")
+        self.label_bssid_output=Gtk.Label(label=bssid)
+        self.label_channel=Gtk.Label(label="Channel:")
+        self.label_channel_output=Gtk.Label(label=channel)
+
+        # airmon check & airmon check kill
+        button_airmon_check = Gtk.Button(label="airmon-ng check")
+        self.button_airmon_check_kill = Gtk.Button(label="airmon-ng check kill")
+        self.button_airmon_check_kill.connect("clicked", self.whenbutton_airmon_check_kill_clicked, grid)
+        button_airmon_check.connect("clicked", self.whenbutton_airmon_check_clicked, grid)
+
+        #airmon start|stop {interface}
+        button_airmon_start = Gtk.Button(label="airmon-ng start")
+        button_airmon_start.connect("clicked", self.whenbutton_airmon_clicked, "start", interface)
+        button_airmon_stop = Gtk.Button(label="airmon-ng stop")
+        button_airmon_stop.connect("clicked", self.whenbutton_airmon_clicked, "stop", interface)
+
+        # command log output
+        self.label_commands_log = Gtk.Label('')
+        self.ebox_airmon_commands_log = Gtk.EventBox()
+        self.label_commands_log_output = Gtk.Label('')
+        self.label_commands_log_output.set_selectable(True)
+        self.label_commands_log_output.set_line_wrap_mode(True)
+        self.ebox_airmon_commands_log.add(self.label_commands_log_output)
+
+
+        # Systemd toggle
+        self.label_systemd=Gtk.Label("\n In most cases, you need to stop your network manager service.\n If you are using systemd with NetworkManager.service you can stop it from here \n")
+        self.button_systemd_start=Gtk.Button("Start NetworkManager.service")
+        self.button_systemd_start.connect("clicked", self.whenbutton_systemd_clicked, "start")
+        self.button_systemd_stop=Gtk.Button("Stop NetworkManager.service")
+        self.button_systemd_stop.connect("clicked", self.whenbutton_systemd_clicked, "stop")
+        label_systemd=Gtk.Label("\n Systemd Status: \n ")
+        systemd_status=os.popen("gksudo /bin/systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
+        self.label_systemd_status=Gtk.Label(systemd_status)
+
+        # Go back to Main Window
+        self.button_mainwindow=Gtk.Button("Go to Main Window")
+        self.button_mainwindow.connect("clicked", self.Gotomainwindow)
+
+
+        # grid
+        grid.attach(self.button_mainwindow, 0, 1, 1, 1)
+        grid.attach(button_airmon_check, 1, 1, 1, 1)
+        grid.attach(button_airmon_start, 1, 4, 1, 1)
+        grid.attach(button_airmon_stop, 1, 7, 1, 1)
+        grid.attach(self.label_commands_log, 1,8,1,1)
+        grid.attach(self.ebox_airmon_commands_log, 1, 10, 1, 1)
+        grid.attach(self.label_systemd, 1, 15, 5, 5)
+        grid.attach(self.button_systemd_start, 1, 20, 1,1)
+        grid.attach(self.button_systemd_stop, 1, 22, 1,1)
+        grid.attach(label_systemd, 1, 23, 1,1)
+        grid.attach(self.label_systemd_status, 1, 24, 1,1)
+
+
+    # airmon-ng (start|stop) button | functionality
+    def whenbutton_airmon_clicked(self, button, arg, interface):
+        if (arg=="start"):
+            command_airmon_start= f"gksudo /bin/airmon-ng start {interface}"
+            output_airmon_start = os.popen(command_airmon_start).read()
+            self.label_commands_log_output.set_text(output_airmon_start)
+            self.label_commands_log.set_text(f"airmon-ng start {interface} output:")
+            newInterface= os.popen(command_airmon_start + " | awk {print $1}").read()
+            print(newInterface)
+            return output_airmon_start
+        elif (arg=="stop"):
+            command_airmon_stop= f"gksudo /bin/airmon-ng stop {interface}"
+            output_airmon_stop= os.popen(command_airmon_stop).read()
+            self.label_commands_log_output.set_text(output_airmon_stop)
+            self.label_commands_log.set_text(f"airmon-ng stop {interface} output:")
+            print(interface)
+            return output_airmon_stop
+
+    # airmon-ng check button | functionality
+    def whenbutton_airmon_check_clicked(self, button, grid):
+        def airmonCheck():
+            command_airmon_check = "gksudo /bin/airmon-ng check"
+            output_airmon_check = os.popen(command_airmon_check).read()
+            return output_airmon_check
+
+        self.label_commands_log_output.set_text(airmonCheck())
+        self.label_commands_log.set_text("airmon-ng check output:")
+        grid.attach(self.button_airmon_check_kill,3, 12, 1, 1)
+        self.show_all()
+        
+    # airmon-ng check kill button | functionality
+    def whenbutton_airmon_check_kill_clicked(self, button, grid):
+        def airmonCheckKill():
+            command_airmon_check_kill = "gksudo /bin/airmon-ng check kill"
+            output_airmon_check_kill = os.popen(command_airmon_check_kill).read()
+            return output_airmon_check_kill
+        self.label_commands_log_output.set_text(airmonCheckKill())
+        self.label_commands_log.set_text("airmon-ng check kill output:")
+        grid.remove(self.button_airmon_check_kill)
+
+
+    # systemd button | functionality
+    def whenbutton_systemd_clicked(self, button, arg):
+        if (arg=="start"):
+            command_networkmanager_start= "gksudo /bin/systemctl start NetworkManager"
+            output_networkmanager_start = os.popen(command_networkmanager_start).read()
+            self.label_commands_log_output.set_text("NetworkManager.service has been started")
+            self.label_commands_log.set_text("systemctl start NetworkManager output:")
+            systemd_status=os.popen("gksudo /bin/systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
+            self.label_systemd_status.set_text(systemd_status)
+            return output_networkmanager_start
+        elif (arg=="stop"):
+            command_networkmanager_stop= "gksudo /bin/systemctl stop NetworkManager"
+            output_networkmanager_stop= os.popen(command_networkmanager_stop).read()
+            self.label_commands_log_output.set_text("NetworkManager.service has been stopped")
+            self.label_commands_log.set_text("systemctl stop NetworkManager output:")
+            systemd_status=os.popen("gksudo /bin/systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
+            self.label_systemd_status.set_text(systemd_status)
+            return output_networkmanager_stop
+
+
+    # mainwindow button | functionality
+    def Gotomainwindow(self, button):
+        mainWindow = MainWindow()
+        mainWindow.show_all()
+        self.hide()
+
 
 
 window = MainWindow()
@@ -409,9 +533,9 @@ window.connect("destroy", Gtk.main_quit)
 window.show_all()
 Gtk.main()
 
-""""
 
 
+"""
         # airodump command
         button_airodump = Gtk.Button(label=f"airodump-ng {interface}")
         button_airodump.connect("clicked", self.whenbutton_airodump_clicked, grid, interface)
