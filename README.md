@@ -19,5 +19,8 @@ Aircrack-ng window where the user can select a wordlist and the cap file that ha
 ## Airmon-ng Window where users can check|start|stop airmon-ng and disable|enable their NetworkManager.service 
 ![Alt text](2.png?raw=true "ScreenShot 2")
 
-## Wifi Scanning Window (Scanning is done with iw instead of airodump-ng cause I wasn't successful in outputting airodump-ng in realtime) where users are to choose an ssid to attack, and extract the 3 variables we'll need for airodump-ng to get the handshake (ssid, bssid, channel)
+## Wifi Scanning Window where users are to choose an ssid to attack, and extract the 3 variables we'll need for airodump-ng to get the handshake (ssid, bssid, channel)
+(Scanning is done with iw instead of airodump-ng cause I wasn't successful in outputting airodump-ng in realtime) 
 ![Alt text](3.png?raw=true "ScreenShot 3")
+
+
