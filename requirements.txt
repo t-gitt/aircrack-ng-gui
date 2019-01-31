@@ -1,1 +1,1 @@
-git+git://github.com:aircrack-ng/aircrack-ng.git@master#aircrack-ng
+git+git://github.com/aircrack-ng/aircrack-ng@master#aircrack-ng
