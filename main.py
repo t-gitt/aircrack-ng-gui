@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository  import Gtk, Gdk, Gio
+from gi.repository  import Gtk, Gdk, Gio 
 import os
 import sys
 import subprocess
@@ -76,6 +76,7 @@ class MainWindow(Gtk.Window):
         button_scanWindow=Gtk.Button(label="Scan")
         button_scanWindow.connect("clicked", self.whenbutton_scanWindow_clicked)
 
+
         grid.add(label_interface)
         grid.add(box_outer)
         grid.attach(button_airmon, 0,4,1,1)
@@ -125,6 +126,7 @@ class MainWindow(Gtk.Window):
                 dialog.run()
                 dialog.destroy()
             on_error_clicked(self)
+
             
 # AirmonWindow
 class AirmonWindow(Gtk.Window):
@@ -141,7 +143,7 @@ class AirmonWindow(Gtk.Window):
         # there is always the scrollbar (otherwise: AUTOMATIC - only if needed
         # - or NEVER)
         scrolled_window.set_policy(
-            Gtk.PolicyType.ALWAYS, Gtk.PolicyType.ALWAYS)
+            Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
         self.add(scrolled_window)
         scrolled_window.add(grid)
@@ -284,11 +286,11 @@ class scanWindow(Gtk.Window):
         # there is always the scrollbar (otherwise: AUTOMATIC - only if needed
         # - or NEVER)
         scrolled_window.set_policy(
-            Gtk.PolicyType.ALWAYS, Gtk.PolicyType.ALWAYS)
+            Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
         self.add(scrolled_window)
         scrolled_window.add(grid)
-        self.set_default_size(800,600)
+        self.set_default_size(250,600)
         self.set_border_width(10)
 
         hb = Gtk.HeaderBar()
@@ -302,9 +304,10 @@ class scanWindow(Gtk.Window):
 
         # SSID List
         
-        self.command_essid="dbus-run-session gksudo /bin/iw {} scan | egrep 'SSID:' | awk '{}'".format(interface, "{print $2}")
+        self.main_command_essid_output= os.popen("dbus-run-session gksudo /bin/iw {} scan".format(interface)).read()
+        self.command_essid="echo '{}' | egrep 'SSID:' | awk '{}'".format(self.main_command_essid_output, "{print $2}")
         output_essid= os.popen(self.command_essid).read()
-#        print("\n"+output_essid+"\n")
+        print("\n"+output_essid+"\n")
         self.box_outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
 
         self.listbox = Gtk.ListBox()
@@ -328,8 +331,8 @@ class scanWindow(Gtk.Window):
             bssid_length = '{0,18}'
             self.ssid= self.selection_listbox
             try:
-                self.bssid= os.popen("dbus-run-session gksudo /bin/iw {} scan | grep -w -B999 '{}' | grep -m 1 'BSS' | grep -E -o '^BSS.{}' | grep -oP '^BSS \K.*'".format(interface, self.selection_listbox, bssid_length)).read()
-                self.channel= os.popen("dbus-run-session gksudo /bin/iw {} scan | grep -w -A999 {} | grep -m 1 -E 'DS Parameter set: channel' | grep -oP 'DS Parameter set: channel \K.*'".format(interface, self.selection_listbox)).read()
+                self.bssid= os.popen("echo '{}' | grep -w -m 1 -B10 '{}' | grep -m 1 -E 'BSS' | grep -E -o '^BSS.{}' | grep -oP '^BSS \K.*'".format(self.main_command_essid_output, self.selection_listbox, bssid_length)).read()
+                self.channel= os.popen("echo '{}' | grep -w -m 1 -A999 {} | grep -m 1 -E 'DS Parameter set: channel' | grep -oP 'DS Parameter set: channel \K.*'".format(self.main_command_essid_output, self.selection_listbox)).read()
                 pass
             except Exception as Thread:
                 raise Thread
@@ -363,9 +366,9 @@ class scanWindow(Gtk.Window):
         self.button_mainwindow=Gtk.Button(label="Go to Main Window")
         self.button_mainwindow.connect("clicked", self.Gotomainwindow)
 
-        # Go to Airodump-ng Window
-        self.button_airodumpwindow=Gtk.Button(label="Airodump-ng")
-        self.button_airodumpwindow.connect("clicked", self.Gotoairodumpwindow, interface)
+        # Go to airmon-ng Window
+        self.button_airmonSsidWindow=Gtk.Button(label="Airodump-ng")
+        self.button_airmonSsidWindow.connect("clicked", self.Gotoairmonssidwindow, interface)
 
 
         # grid
@@ -381,7 +384,7 @@ class scanWindow(Gtk.Window):
         grid.attach(label_empty_space_2, 0, 8, 1, 1)
         grid.attach(label_empty_space_3, 0, 16, 1, 1)
         grid.attach(self.box_outer, 0,7,1,1)
-        grid.attach(self.button_airodumpwindow, 0, 16, 1, 1)
+        grid.attach(self.button_airmonSsidWindow, 0, 16, 1, 1)
 
     # mainwindow button | functionality
     def Gotomainwindow(self, button):
@@ -389,11 +392,11 @@ class scanWindow(Gtk.Window):
         mainWindow.show_all()
         self.hide()
     
-    # airodumpWindow button | functionality
-    def Gotoairodumpwindow(self, button, interface):
+    # airmonWindowSSid button | functionality
+    def Gotoairmonssidwindow(self, button, interface):
         try:
-            airodumpwindow = airodumpWindow(interface, self.ssid, self.bssid, self.channel)
-            airodumpwindow.show_all()
+            airmonssidwindow = airmonSsidWindow(interface, self.ssid, self.bssid, self.channel)
+            airmonssidwindow.show_all()
             self.hide()
             pass
         except Exception as Thread:
@@ -405,12 +408,12 @@ class scanWindow(Gtk.Window):
             scanwindow = scanWindow(interface)
             scanwindow.show_all()
 
-#  Airodump-ng Window
-class airodumpWindow(Gtk.Window):
+#  Airmon-ng Window
+class airmonSsidWindow(Gtk.Window):
 
     def __init__(self, interface, ssid, bssid, channel):
 
-        Gtk.Window.__init__(self, title="aircrack-ng GUI | Airodump-ng Window")
+        Gtk.Window.__init__(self, title="aircrack-ng GUI | Airmon-ng with SSID Window")
         self.connect("destroy", Gtk.main_quit)
         grid = Gtk.Grid()
 
@@ -420,7 +423,7 @@ class airodumpWindow(Gtk.Window):
         # there is always the scrollbar (otherwise: AUTOMATIC - only if needed
         # - or NEVER)
         scrolled_window.set_policy(
-            Gtk.PolicyType.ALWAYS, Gtk.PolicyType.ALWAYS)
+            Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
         self.add(scrolled_window)
         scrolled_window.add(grid)
@@ -429,7 +432,7 @@ class airodumpWindow(Gtk.Window):
 
         hb = Gtk.HeaderBar()
         hb.set_show_close_button(True)
-        hb.props.title = "aircrack-ng GUI | Airodump-ng  Window"
+        hb.props.title = "aircrack-ng GUI | Airmon-ng with SSID Window"
         self.set_titlebar(hb)
 
         label_empty_space=Gtk.Label(label="\n")
@@ -443,6 +446,7 @@ class airodumpWindow(Gtk.Window):
         self.label_channel=Gtk.Label(label="Channel:")
         self.label_channel_output=Gtk.Label(label=channel)
 
+
         # airmon check & airmon check kill
         button_airmon_check = Gtk.Button(label="airmon-ng check")
         self.button_airmon_check_kill = Gtk.Button(label="airmon-ng check kill")
@@ -451,7 +455,7 @@ class airodumpWindow(Gtk.Window):
 
         #airmon start|stop {interface}
         button_airmon_start = Gtk.Button(label="airmon-ng start")
-        button_airmon_start.connect("clicked", self.whenbutton_airmon_clicked, "start", interface)
+        button_airmon_start.connect("clicked", self.whenbutton_airmon_clicked, "start", interface, grid)
         button_airmon_stop = Gtk.Button(label="airmon-ng stop")
         button_airmon_stop.connect("clicked", self.whenbutton_airmon_clicked, "stop", interface)
 
@@ -478,12 +482,18 @@ class airodumpWindow(Gtk.Window):
         self.button_mainwindow=Gtk.Button(label="Go to Main Window")
         self.button_mainwindow.connect("clicked", self.Gotomainwindow)
 
+        # Current Interface
         self.label_current_interface=Gtk.Label(label="Current Interface:")
         self.label_current_interface_output=Gtk.Label(label="")
+        self.new_interface=""
+        # Go to Airodump-ng Window
+        self.button_airodumpWindow=Gtk.Button(label="Airodump-ng")
+        self.button_airodumpWindow.connect("clicked", self.Gotoairodumpwindow, ssid, bssid, channel)
 
         # grid
         grid.attach(self.button_mainwindow, 0, 1, 1, 1)
-        grid.attach(self.label_current_interface, 2, 1, 1, 1)
+        grid.attach(self.button_airodumpWindow, 0, 4, 1, 1)
+        grid.attach(self.label_current_interface, 1, 0, 0, 0)
         grid.attach(self.label_current_interface_output, 3, 1, 1, 1)
         grid.attach(button_airmon_check, 1, 1, 1, 1)
         grid.attach(button_airmon_start, 1, 4, 1, 1)
@@ -504,23 +514,37 @@ class airodumpWindow(Gtk.Window):
 
 
     # airmon-ng (start|stop) button | functionality
-    def whenbutton_airmon_clicked(self, button, arg, interface):
+    def whenbutton_airmon_clicked(self, button, arg, interface, grid):
         if (arg=="start"):
-            command_airmon_start= f"dbus-run-session gksudo /bin/airmon-ng start {interface}"
+            command_airmon_start= f"gksudo /bin/airmon-ng start {interface}"
             output_airmon_start = os.popen(command_airmon_start).read()
             self.label_commands_log_output.set_text(output_airmon_start)
             self.label_commands_log.set_text(f"dbus-run-session airmon-ng start {interface} output:")
-            newInterface= os.popen("dbus-run-session gksudo airmon-ng start {} | grep 'enabled' | awk '{}' | sed -e 's/\(^.*]\)\(.*\)\().*$\)/\2/'".format(interface, "{print $9}")).read()
-            print(newInterface)
-            self.label_current_interface_output.set_text(newInterface)
-            return output_airmon_start
+            command_new_interface = "/bin/iw dev | awk '$1==\"Interface\" {print $2}'"
+            output_new_interface = os.popen(command_new_interface).read()
+            print(output_new_interface)
+            grid.attach(self.button_airodumpWindow, 1, 36, 1, 1)
+            self.label_current_interface_output.set_text(output_new_interface)
+            self.new_interface=output_new_interface
+            return output_airmon_start, self.new_interface
         elif (arg=="stop"):
             command_airmon_stop= f"dbus-run-session gksudo /bin/airmon-ng stop {interface}"
             output_airmon_stop= os.popen(command_airmon_stop).read()
             self.label_commands_log_output.set_text(output_airmon_stop)
             self.label_commands_log.set_text(f"dbus-run-session airmon-ng stop {interface} output:")
-            print(interface)
-            return output_airmon_stop
+            command_new_interface = "/bin/iw dev | awk '$1==\"Interface\" {print $2}'"
+            output_new_interface = os.popen(command_new_interface).read()
+            print(output_new_interface)
+            self.label_current_interface_output.set_text(output_new_interface)
+            new_interface=output_new_interface
+            return output_airmon_stop, new_interface
+
+    # AirodumpWindow button | functionality
+    def Gotoairodumpwindow(self, button, ssid, bssid, channel):
+        airodumpwindow = airodumpWindow(self.new_interface, ssid, bssid, channel)
+        airodumpwindow.show_all()
+        self.hide()
+
 
     # airmon-ng check button | functionality
     def whenbutton_airmon_check_clicked(self, button, grid):
@@ -570,6 +594,39 @@ class airodumpWindow(Gtk.Window):
         mainWindow.show_all()
         self.hide()
 
+
+#  Airodump-ng Window
+class airodumpWindow(Gtk.Window):
+
+    def __init__(self, new_interface, ssid, bssid, channel):
+
+        Gtk.Window.__init__(self, title="aircrack-ng GUI | Airodump-ng Window")
+        self.connect("destroy", Gtk.main_quit)
+        grid = Gtk.Grid()
+
+         # the scrolledwindow
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_border_width(10)
+        # there is always the scrollbar (otherwise: AUTOMATIC - only if needed
+        # - or NEVER)
+        scrolled_window.set_policy(
+            Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+
+        self.add(scrolled_window)
+        scrolled_window.add(grid)
+        self.set_border_width(10)
+        self.set_default_size(800,600)
+
+        hb = Gtk.HeaderBar()
+        hb.set_show_close_button(True)
+        hb.props.title = "aircrack-ng GUI | Airodump-ng Window"
+        self.set_titlebar(hb)
+
+        label_empty_space=Gtk.Label(label="\n")
+        label_empty_space_2=Gtk.Label(label="\n")
+
+        print("hi")
+        print(new_interface)
 
 
 window = MainWindow()
