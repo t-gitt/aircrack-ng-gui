@@ -72,6 +72,10 @@ class MainWindow(Gtk.Window):
         button_airmon=Gtk.Button(label="airmon-ng")
         button_airmon.connect("clicked", self.whenbutton_airmon_clicked)
 
+        # Go to aircrackWindow button
+        button_aircrack=Gtk.Button(label="aircrack-ng")
+        button_aircrack.connect("clicked", self.whenbutton_aircrack_clicked)
+
         # Go to scanWindow button
         button_scanWindow=Gtk.Button(label="Scan")
         button_scanWindow.connect("clicked", self.whenbutton_scanWindow_clicked)
@@ -81,6 +85,7 @@ class MainWindow(Gtk.Window):
         grid.add(box_outer)
         grid.attach(button_airmon, 0,4,1,1)
         grid.attach(button_scanWindow, 0,3,1,1)
+        grid.attach(button_aircrack, 0,5,1,1)
 
     # airmonWindow button | functionality
     def whenbutton_airmon_clicked(self, button):
@@ -127,6 +132,11 @@ class MainWindow(Gtk.Window):
                 dialog.destroy()
             on_error_clicked(self)
 
+    # aircrackWindow button | functionality
+    def whenbutton_aircrack_clicked(self, button):
+        aircrackwindow = aircrackWindow()
+        aircrackwindow.show_all()
+        self.hide()
             
 # AirmonWindow
 class AirmonWindow(Gtk.Window):
@@ -637,18 +647,17 @@ class airodumpWindow(Gtk.Window):
         # aireplay-ng
         self.label_entry_station=Gtk.Label(label="Input one of the stations' addresses:")
         self.entry_station=Gtk.Entry()
-        self.station = self.entry_station.get_text()
         self.button_aireplay=Gtk.Button(label="Start aireplay-ng")
         self.button_aireplay.connect("clicked", self.startAireplay)
 
-        # deauth
-        self.label_entry_deauth=Gtk.Label(label="Input how many deauth you want to send")
-        self.entry_deauth=Gtk.Entry()
-        self.deauth= self.entry_deauth.get_text()
 
         # Terminal
         self.label_terminal=Gtk.Label(label="input your desired terminal along with its excution argument. \n ex.1. xfce4-terminal -x \n ex.2. gnome-terminal -x")
         self.entry_terminal=Gtk.Entry()
+
+        # deauth
+        self.label_entry_deauth=Gtk.Label(label="Input how many deauth you want to send")
+        self.entry_deauth=Gtk.Entry()
 
         # target name
         self.label_target=Gtk.Label(label="input the name of airodump-ng output file where the handshake is stored")
@@ -705,8 +714,15 @@ class airodumpWindow(Gtk.Window):
         
     # aireplay button | functionality
     def startAireplay(self, button):
-        aireplay_output = os.popen("sudo /bin/aireplay-ng --deauth '{}' -a '{}' -c '{}' {}".format(self.deauth, self.bssid, self.station, self.new_interface)).read()
-        return aireplay_output
+        try:
+            station = self.entry_station.get_text()
+            deauth= self.entry_deauth.get_text()
+            aireplay_output = os.popen("sudo /bin/aireplay-ng --deauth '{}' -a '{}' -c '{}' {}".format(deauth, self.bssid, station, self.new_interface)).read()
+            print(aireplay_output)
+            pass
+        except Exception as Thread:
+            raise Thread
+        
     # mainwindow button | functionality
     def Gotomainwindow(self, button):
         mainWindow = MainWindow()
@@ -714,71 +730,118 @@ class airodumpWindow(Gtk.Window):
         self.hide()
 
 
+#  Aircrack-ng Window
+class aircrackWindow(Gtk.Window):
 
+    def __init__(self):
+
+        Gtk.Window.__init__(self, title="aircrack-ng GUI | Aircrack-ng Window")
+        self.connect("destroy", Gtk.main_quit)
+        grid = Gtk.Grid()
+
+         # the scrolledwindow
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_border_width(10)
+        # there is always the scrollbar (otherwise: AUTOMATIC - only if needed
+        # - or NEVER)
+        scrolled_window.set_policy(
+            Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+
+        self.add(scrolled_window)
+        scrolled_window.add(grid)
+        self.set_border_width(10)
+        self.set_default_size(800,600)
+
+        hb = Gtk.HeaderBar()
+        hb.set_show_close_button(True)
+        hb.props.title = "aircrack-ng GUI | Aircrack-ng Window"
+        self.set_titlebar(hb)
+
+        self.label_empty_space=Gtk.Label(label="\n")
+        label_empty_space_2=Gtk.Label(label="\n")
+
+        self.cap= None
+        self.wordlist= None
+        self.label_cap=Gtk.Label(label="cap file path is:")
+        self.label_cap_output=Gtk.Label(label="")
+        self.label_wordlist=Gtk.Label(label="wordlist file path is:")
+        self.label_wordlist_output=Gtk.Label(label="")
+    
+        # cap file
+        self.button_cap = Gtk.Button("Choose the *.cap file")
+        self.button_cap.connect("clicked", self.on_file_clicked, "cap")
+
+        # wordlist file
+        self.button_wordlist= Gtk.Button("Choose a wordlist")
+        self.button_wordlist.connect("clicked", self.on_file_clicked, "wordlist")
+
+        # button aircrack
+        self.button_aircrack=Gtk.Button(label="Start aircrack-ng")
+        self.button_aircrack.connect("clicked", self.startAircrack)
+
+        # Terminal
+        self.label_terminal=Gtk.Label(label="input your desired terminal along with its excution argument. \n ex.1. xfce4-terminal -x \n ex.2. gnome-terminal -x")
+        self.entry_terminal=Gtk.Entry()
+
+        # Go back to Main Window
+        self.button_mainwindow=Gtk.Button(label="Go to Main Window")
+        self.button_mainwindow.connect("clicked", self.Gotomainwindow)
+
+        #grid 
+        grid.attach(self.button_mainwindow, 0, 1, 1, 1)
+        grid.attach(self.button_cap, 1, 2, 1, 1)
+        grid.attach(self.label_cap, 1, 3, 1, 1)
+        grid.attach(self.label_cap_output, 2, 3, 1, 1)
+        grid.attach(self.button_wordlist, 1, 4, 1, 1)
+        grid.attach(self.label_wordlist, 1, 5, 1, 1)
+        grid.attach(self.label_wordlist_output, 2, 5, 1, 1)
+        grid.attach(self.label_terminal, 1, 7, 1, 1)
+        grid.attach(self.entry_terminal, 1, 8, 1, 1)
+        grid.attach(self.button_aircrack, 0, 9, 1, 1)
+
+
+    # aircrack | functionality
+    def startAircrack(self, button):
+        try:
+            self.terminal = self.entry_terminal.get_text()
+            command_aircrack="{} sudo /bin/aircrack-ng -w '{}' '{}'".format(self.terminal, self.wordlist, self.cap)
+            start_aircrack=os.popen(command_aircrack)
+            pass
+        except Exception as Thread:
+            raise Thread
+
+    # file dialog
+    def on_file_clicked(self, widget, file_type):
+        dialog = Gtk.FileChooserDialog("Please choose a file", self,
+            Gtk.FileChooserAction.OPEN,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            print("Open clicked")
+            if (file_type == "cap"):
+                self.cap= dialog.get_filename()
+                self.label_cap_output.set_text(self.cap)
+
+            elif (file_type == "wordlist"):
+                self.wordlist= dialog.get_filename()
+                self.label_wordlist_output.set_text(self.wordlist)
+
+            print("File selected: " + dialog.get_filename())
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancel clicked")
+
+        dialog.destroy()
+        
+    # mainwindow button | functionality
+    def Gotomainwindow(self, button):
+        mainWindow = MainWindow()
+        mainWindow.show_all()
+        self.hide()
 
 window = MainWindow()
 window.connect("destroy", Gtk.main_quit)
 window.show_all()
 Gtk.main()
 
-
-
-"""
-        # airodump command
-        button_airodump = Gtk.Button(label=f"airodump-ng {interface}")
-        button_airodump.connect("clicked", self.whenbutton_airodump_clicked, grid, interface)
-        self.label_airodump_output = Gtk.Label("test")
-        self.textview_airodump=Gtk.TextView() 
-        scroll = Gtk.ScrolledWindow()
-        scroll.add(self.textview_airodump)
-        exp = Gtk.Expander()
-#        exp.set_size(400,300)
-#        scroll.set_default_size(400,300)
-        exp.add(scroll)
-
-
-        self.sub_proc = subprocess.Popen(f"/bin/ls ", stdout=subprocess.PIPE, shell=True)
-        self.sub_outp = ""
-        def non_block_read(output):
-            fd = output.fileno()
-            fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-            fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
-            try:
-                self.foutput=output.read().decode("utf-8")
-#                self.foutput=output.read()
-
-                return self.foutput
-                return 'hi'
-
-            except Exception as Thread:
-                raise Thread
-
-
-
-        def update_terminal():
-            self.textview_airodump.get_buffer().insert_at_cursor(non_block_read(self.sub_proc.stdout))
-            return self.sub_proc.poll() is None
-
-        gobject.timeout_add(100, update_terminal)
-
-
-
-
-                cmd = ['./abc.py'] 
-                proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, 
-stderr=subprocess.STDOUT ) 
-
-                while True: 
-                        line = proc.stdout.readline() 
-                        wx.Yield() 
-                        if line.strip() == "": 
-                                pass 
-                        else: 
-                                print line.strip() 
-                                self.text_area_right.AppendText(line) # This is my update part of 
-the text area 
-
-                        if not line: 
-                                break 
-                proc.wait() 
-                """
