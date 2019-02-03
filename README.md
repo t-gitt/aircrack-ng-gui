@@ -12,16 +12,3 @@ Airodump-ng with a running timeout, user can choose the access point, specifiy f
 Aircrack-ng window where the user can select a wordlist and the cap file that has the handshake, then the script will try to bruteforce the ap using the wordlist | **Completed**
 
 
-# Screenshots
-## Main Window where users are to choose an interface (wlp4s0)
-![Alt text](1.png?raw=true "ScreenShot 1")
-
-## Airmon-ng Window where users can check|start|stop airmon-ng and disable|enable their NetworkManager.service 
-![Alt text](2.png?raw=true "ScreenShot 2")
-
-## Wifi Scanning Window where users are to choose an ssid to attack, and extract the 3 variables we'll need for airodump-ng to get the handshake (ssid, bssid, channel)
-![Alt text](3.png?raw=true "ScreenShot 3")
-
-(Scanning is done with iw instead of airodump-ng cause I wasn't successful in outputting airodump-ng in realtime) 
-
-
