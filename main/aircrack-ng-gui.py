@@ -28,7 +28,7 @@ class MainWindow(Gtk.Window):
         Gtk.Window.__init__(self, title="aircrack-ng GUI")
         self.connect("destroy", Gtk.main_quit)
         self.set_border_width(10)
-        self.set_default_size(800,600)
+        self.set_default_size(200,200)
         grid = Gtk.Grid()
         self.add(grid)
 
@@ -36,6 +36,9 @@ class MainWindow(Gtk.Window):
         hb.set_show_close_button(True)
         hb.props.title = "aircrack-ng GUI"
         self.set_titlebar(hb)
+
+        #empty space
+        label_empty_space=Gtk.Label(label="\n")
 
         # Interfaces List
         command_interface = "/bin/iw dev | awk '$1==\"Interface\" {print $2}'"
@@ -86,6 +89,7 @@ class MainWindow(Gtk.Window):
         grid.attach(button_airmon, 0,4,1,1)
         grid.attach(button_scanWindow, 0,3,1,1)
         grid.attach(button_aircrack, 0,5,1,1)
+        grid.attach(label_empty_space, 0,2,1,1)
 
     # airmonWindow button | functionality
     def whenbutton_airmon_clicked(self, button):
@@ -551,9 +555,19 @@ class airmonSsidWindow(Gtk.Window):
 
     # AirodumpWindow button | functionality
     def Gotoairodumpwindow(self, button, ssid, bssid, channel):
-        airodumpwindow = airodumpWindow(self.new_interface, ssid, bssid, channel)
-        airodumpwindow.show_all()
-        self.hide()
+            if ("mon" in self.new_interface):
+                airodumpwindow = airodumpWindow(self.new_interface, ssid, bssid, channel)
+                airodumpwindow.show_all()
+                self.hide()
+            else:
+                def on_error_clicked(self):
+                    dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.ERROR,
+                        Gtk.ButtonsType.OK, "airmon-ng is not started")
+                    dialog.format_secondary_text(
+                        "Please start airmon-ng and try again")
+                    dialog.run()
+                    dialog.destroy()
+                on_error_clicked(self)
 
 
     # airmon-ng check button | functionality
@@ -654,6 +668,7 @@ class airodumpWindow(Gtk.Window):
         # Terminal
         self.label_terminal=Gtk.Label(label="input your desired terminal along with its excution argument. \n ex.1. xfce4-terminal -x \n ex.2. gnome-terminal -x")
         self.entry_terminal=Gtk.Entry()
+        self.entry_terminal.set_text("xfce4-terminal -x")
 
         # deauth
         self.label_entry_deauth=Gtk.Label(label="Input how many deauth you want to send")
@@ -782,6 +797,7 @@ class aircrackWindow(Gtk.Window):
         # Terminal
         self.label_terminal=Gtk.Label(label="input your desired terminal along with its excution argument. \n ex.1. xfce4-terminal -x \n ex.2. gnome-terminal -x")
         self.entry_terminal=Gtk.Entry()
+        self.entry_terminal.set_text("xfce4-terminal -x")
 
         # Go back to Main Window
         self.button_mainwindow=Gtk.Button(label="Go to Main Window")
