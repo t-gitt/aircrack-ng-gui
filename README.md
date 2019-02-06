@@ -28,7 +28,7 @@ A wifi access point scanning window. After choosing their interface, the user ca
 
 ![Alt text](2.png?raw=true "ScreenShot 2")
 
-### Airmon-ng "with ssid chosen window" Window
+### Airmon-ng "with ssid chosen" Window
 Very similar to Airmon-ng window, except this one pass the ssid variables "SSID, BSSID, CHANNEL" to Airodump-ng window
 
 ![Alt text](3.png?raw=true "ScreenShot 3")
