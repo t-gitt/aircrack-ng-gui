@@ -8,12 +8,12 @@ Performing a bruteforce attack on WPA/WPA2 networks using [aircrack-ng](https://
 ## Screenshots
 
 ### Main Window
-Main Window where user can choose to go Scan|airmon-ng|aircrack-ng windows after selecting the interface (wlp4s0)
+Main Window where user can choose to go Scan, airmon-ng, aircrack-ng windows after selecting the interface (wlp4s0)
 
 ![Alt text](1.png?raw=true "ScreenShot 1")
 
 ### Airmon-ng  Window
-A window to check|start|stop airmon-ng, along with starting|stopping systemd NetworkManager.service
+A window to check, start or stop airmon-ng, along with starting and stopping systemd NetworkManager.service
 
 ![Alt text](9.png?raw=true "ScreenShot 9")
 
