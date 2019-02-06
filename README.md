@@ -3,7 +3,7 @@
 A basic [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) gui interface using python-gtk3
 
 ## What can it do?
-Performing a bruteforce attack on WPA/WPA2 networks using [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) and $ iw.
+Performing a bruteforce attack on WPA/WPA2 networks using [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) and `iw`.
 
 ## Screenshots
 
