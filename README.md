@@ -49,7 +49,7 @@ After saving the handshake into a cap file, aircrack can be accessed from the ma
 
 * Access points scanning using "iw" with automatic bssid and channel extraction.
 
-* Airodump-ng with , the user can choose the access point, and airodump-ng will output the data in .cap format  * still looking for a way to autodetect the handshake and terminate airodump-ng
+* Airodump-ng with ability to choose the access point, and airodump-ng will output the data in .cap format  * still looking for a way to autodetect the handshake and terminate airodump-ng
 
 * An aircrack-ng window where the user can select a wordlist and the cap file that has the handshake. Then, the script will try to bruteforce the handshake using the wordlist
 
