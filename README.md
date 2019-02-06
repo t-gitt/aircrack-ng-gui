@@ -1,15 +1,9 @@
 # aircrack-ng GUI
 
-A basic aircrack-ng gui interface using python-gtk3
+A basic [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) gui interface using python-gtk3
 
 ## What can it do?
-Initially, it is to support airmon-ng, where the user can start, stop and check the status of airmon-ng. | **Completed**
-
-Access points scanning window using "iw" with automatic bssid and channel extraction after user chooses an ssid to be attacked. | **Completed**
-
-Airodump-ng with a running timeout, user can choose the access point, specifiy for how long should airodump-ng listen to its trafic, and it will output the data in .cap format | **Completed** * also still looking for a way to autodetect the handshake and terminate airodump-ng
-
-Aircrack-ng window where the user can select a wordlist and the cap file that has the handshake, then the script will try to bruteforce the ap using the wordlist | **Completed**
+Performing a bruteforce attack on WPA/WPA2 networks using [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) and $ iw.
 
 ## Screenshots
 
@@ -49,3 +43,12 @@ After running airodump-ng, the user can use aireplay to send deauthentication pa
 After saving the handshake into a cap file, aircrack can be accessed from the main window. The user chooses a .cap file that contain the handshake and a wordlist to perform the bruteforce attack on their desired terminal emulator.
 
 ![Alt text](8.png?raw=true "ScreenShot 8")
+
+## development stages
+* Initially, it is to support airmon-ng, where the user can start, stop and check the status of airmon-ng.
+
+* Access points scanning window using "iw" with automatic bssid and channel extraction after user chooses an ssid to be attacked. 
+
+* Airodump-ng with a running timeout, user can choose the access point, specifiy for how long should airodump-ng listen to its trafic, and it will output the data in .cap format  * still looking for a way to autodetect the handshake and terminate airodump-ng
+
+* Aircrack-ng window where the user can select a wordlist and the cap file that has the handshake, then the script will try to bruteforce the ap using the wordlist
