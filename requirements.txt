@@ -1,1 +1,1 @@
-git+git://github.com/aircrack-ng/aircrack-ng@master#aircrack-ng
+PyGObject==3.30.4
