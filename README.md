@@ -8,7 +8,7 @@ Performing a bruteforce attack on WPA/WPA2 networks using [aircrack-ng](https://
 ## Usage
 * clone the repo
 * install dependencies by `pip install -r requirements.txt`
-* make sure aircrack-ng is installed
+* make sure [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) is installed
 * run aircrack-ng-gui by `python aircrack-ng-gui.py` | make sure you are running it with python 3
 
 ## Screenshots
