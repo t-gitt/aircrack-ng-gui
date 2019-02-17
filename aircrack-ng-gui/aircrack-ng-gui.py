@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository  import Gtk, Gdk, Gio 
@@ -8,15 +8,13 @@ import subprocess
 from gi.repository import GObject as gobject
 
 dirname, filename = os.path.split(os.path.abspath(__file__))
-
+diruser= os.popen("eval echo ~${SUDO_USER}").read().split('\n', 1)[0]
 
 class ListBoxRowWithData(Gtk.ListBoxRow):
     def __init__(self, data):
         super(Gtk.ListBoxRow, self).__init__()
         self.data = data
         self.add(Gtk.Label(label=data))
-
-
 
 # MainWindow
 class MainWindow(Gtk.Window):
@@ -140,6 +138,16 @@ class MainWindow(Gtk.Window):
         aircrackwindow = aircrackWindow()
         aircrackwindow.show_all()
         self.hide()
+
+
+class ListBoxRowWithData(Gtk.ListBoxRow):
+    def __init__(self, data):
+        super(Gtk.ListBoxRow, self).__init__()
+        self.data = data
+        self.add(Gtk.Label(label=data))
+
+
+
             
 # AirmonWindow
 class AirmonWindow(Gtk.Window):
@@ -197,7 +205,7 @@ class AirmonWindow(Gtk.Window):
         self.button_systemd_stop.connect("clicked", self.whenbutton_systemd_clicked, "stop")
         label_systemd=Gtk.Label(label="\n Systemd Status: \n ")
         systemd_status=os.popen("sudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
-        self.label_systemd_status=Gtk.Label(systemd_status)
+        self.label_systemd_status=Gtk.Label(label=systemd_status)
 
         # Go back to Main Window
         self.button_mainwindow=Gtk.Button(label="Go to Main Window")
@@ -702,7 +710,16 @@ class airodumpWindow(Gtk.Window):
         try:
             self.terminal = self.entry_terminal.get_text()
             self.target = self.entry_target_name.get_text()
-            path="{}/outputs/{}".format(dirname, self.target)
+            try:
+                if os.path.isdir('{}/.aircrack-ng-gui/'.format(diruser)):
+                    path="{}/.aircrack-ng-gui/{}".format(diruser, self.target)
+                else:
+                    os.system('mkdir {}/.aircrack-ng-gui'.format(diruser))
+                    path="{}/.aircrack-ng-gui/{}".format(diruser, self.target)
+                pass
+            except Exception as Thread:
+                raise Thread
+
             bssid = os.linesep.join([s for s in self.bssid.splitlines() if s])
             channel = os.linesep.join([s for s in self.channel.splitlines() if s])
             grid.attach(self.button_aireplay, 0, 12, 1, 1)

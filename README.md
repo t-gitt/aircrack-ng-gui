@@ -6,10 +6,21 @@ An [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) gui interface u
 Performing a bruteforce attack on WPA/WPA2 networks using [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) and `iw`.
 
 ## Usage
+### To Install On Linux
+* make sure [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) is installed
+* Clone the repo `git clone https://github.com/tqk-gh/aircrack-ng-gui.git`
+* `cd aircrack-ng-gui/`
+* Install the script by `sudo setup.py install`
+* It should have added the script to /usr/bin/ and you can now run it from the terminal by `sudo aircrack-ng-gui.py`
+
+
+### To Manually Running the script
+* make sure [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) is installed
 * clone the repo
 * install dependencies by `pip install -r requirements.txt`
-* make sure [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) is installed
 * run aircrack-ng-gui by `sudo python aircrack-ng-gui.py` | make sure you are running it with python 3
+
+> Airodump-ng output files are saved in `/home/$USER/.aircrack-ng-gui/`
 
 ## Screenshots
 
