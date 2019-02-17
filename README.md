@@ -20,8 +20,9 @@ Performing a bruteforce attack on WPA/WPA2 networks using [aircrack-ng](https://
 ### To Manually Running the script
 * make sure [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) is installed
 * clone the repo
+* `cd aircrack-ng-gui/`
 * install dependencies by `pip install -r requirements.txt`
-* run aircrack-ng-gui by `sudo python aircrack-ng-gui.py` | make sure you are running it with python 3
+* run aircrack-ng-gui by `sudo python aircrack-ng-gui/aircrack-ng-gui.py` | make sure you are running it with python 3
 
 > Airodump-ng output files are saved in `/home/$USER/.aircrack-ng-gui/`
 
