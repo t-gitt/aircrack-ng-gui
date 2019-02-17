@@ -13,6 +13,9 @@ Performing a bruteforce attack on WPA/WPA2 networks using [aircrack-ng](https://
 * Install the script by `sudo setup.py install`
 * It should have added the script to /usr/bin/ and you can now run it from the terminal by `sudo aircrack-ng-gui.py`
 
+#### Uninstall
+* You can uninstall it through pip by `pip uninstall aircrack-ng-gui`
+
 
 ### To Manually Running the script
 * make sure [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) is installed
