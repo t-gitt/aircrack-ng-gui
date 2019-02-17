@@ -17,7 +17,7 @@ Performing a bruteforce attack on WPA/WPA2 networks using [aircrack-ng](https://
 * You can uninstall it through pip by `pip uninstall aircrack-ng-gui`
 
 
-### To Manually Running the script
+### To Manually Run The Script
 * make sure [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) is installed
 * clone the repo
 * `cd aircrack-ng-gui/`
