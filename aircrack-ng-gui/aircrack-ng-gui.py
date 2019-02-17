@@ -14,7 +14,7 @@ class ListBoxRowWithData(Gtk.ListBoxRow):
     def __init__(self, data):
         super(Gtk.ListBoxRow, self).__init__()
         self.data = data
-        self.add(Gtk.Label(data))
+        self.add(Gtk.Label(label=data))
 
 
 
@@ -196,7 +196,7 @@ class AirmonWindow(Gtk.Window):
         self.button_systemd_stop=Gtk.Button(label="Stop NetworkManager.service")
         self.button_systemd_stop.connect("clicked", self.whenbutton_systemd_clicked, "stop")
         label_systemd=Gtk.Label(label="\n Systemd Status: \n ")
-        systemd_status=os.popen("gksudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
+        systemd_status=os.popen("sudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
         self.label_systemd_status=Gtk.Label(systemd_status)
 
         # Go back to Main Window
@@ -220,13 +220,13 @@ class AirmonWindow(Gtk.Window):
     # airmon-ng (start|stop) button | functionality
     def whenbutton_airmon_clicked(self, button, arg, interface):
         if (arg=="start"):
-            command_airmon_start= f"gksudo airmon-ng start {interface}"
+            command_airmon_start= f"sudo airmon-ng start {interface}"
             output_airmon_start = os.popen(command_airmon_start).read()
             self.label_commands_log_output.set_text(output_airmon_start)
             self.label_commands_log.set_text(f"airmon-ng start {interface} output:")
             return output_airmon_start
         elif (arg=="stop"):
-            command_airmon_stop= f"gksudo airmon-ng stop {interface}"
+            command_airmon_stop= f"sudo airmon-ng stop {interface}"
             output_airmon_stop= os.popen(command_airmon_stop).read()
             self.label_commands_log_output.set_text(output_airmon_stop)
             self.label_commands_log.set_text(f"airmon-ng stop {interface} output:")
@@ -235,7 +235,7 @@ class AirmonWindow(Gtk.Window):
     # airmon-ng check button | functionality
     def whenbutton_airmon_check_clicked(self, button, grid):
         def airmonCheck():
-            command_airmon_check = "gksudo airmon-ng check"
+            command_airmon_check = "sudo airmon-ng check"
             output_airmon_check = os.popen(command_airmon_check).read()
             return output_airmon_check
 
@@ -247,7 +247,7 @@ class AirmonWindow(Gtk.Window):
     # airmon-ng check kill button | functionality
     def whenbutton_airmon_check_kill_clicked(self, button, grid):
         def airmonCheckKill():
-            command_airmon_check_kill = "gksudo airmon-ng check kill"
+            command_airmon_check_kill = "sudo airmon-ng check kill"
             output_airmon_check_kill = os.popen(command_airmon_check_kill).read()
             return output_airmon_check_kill
         self.label_commands_log_output.set_text(airmonCheckKill())
@@ -258,19 +258,19 @@ class AirmonWindow(Gtk.Window):
     # systemd button | functionality
     def whenbutton_systemd_clicked(self, button, arg):
         if (arg=="start"):
-            command_networkmanager_start= "gksudo systemctl start NetworkManager"
+            command_networkmanager_start= "sudo systemctl start NetworkManager"
             output_networkmanager_start = os.popen(command_networkmanager_start).read()
             self.label_commands_log_output.set_text("NetworkManager.service has been started")
             self.label_commands_log.set_text("systemctl start NetworkManager output:")
-            systemd_status=os.popen("gksudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
+            systemd_status=os.popen("sudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
             self.label_systemd_status.set_text(systemd_status)
             return output_networkmanager_start
         elif (arg=="stop"):
-            command_networkmanager_stop= "gksudo systemctl stop NetworkManager"
+            command_networkmanager_stop= "sudo systemctl stop NetworkManager"
             output_networkmanager_stop= os.popen(command_networkmanager_stop).read()
             self.label_commands_log_output.set_text("NetworkManager.service has been stopped")
             self.label_commands_log.set_text("systemctl stop NetworkManager output:")
-            systemd_status=os.popen("gksudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
+            systemd_status=os.popen("sudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
             self.label_systemd_status.set_text(systemd_status)
             return output_networkmanager_stop
 
@@ -317,7 +317,7 @@ class scanWindow(Gtk.Window):
 
         # SSID List
         
-        self.main_command_essid_output= os.popen("dbus-run-session gksudo iw {} scan".format(interface)).read()
+        self.main_command_essid_output= os.popen("dbus-run-session sudo iw {} scan".format(interface)).read()
         self.command_essid="echo '{}' | egrep 'SSID:' | awk '{}'".format(self.main_command_essid_output, "{print $2}")
         output_essid= os.popen(self.command_essid).read()
         print("\n"+output_essid+"\n")
@@ -488,7 +488,7 @@ class airmonSsidWindow(Gtk.Window):
         self.button_systemd_stop=Gtk.Button(label="Stop NetworkManager.service")
         self.button_systemd_stop.connect("clicked", self.whenbutton_systemd_clicked, "stop")
         label_systemd=Gtk.Label(label="\n Systemd Status: \n ")
-        systemd_status=os.popen("dbus-run-session gksudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
+        systemd_status=os.popen("dbus-run-session sudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
         self.label_systemd_status=Gtk.Label(systemd_status)
 
         # Go back to Main Window
@@ -529,7 +529,7 @@ class airmonSsidWindow(Gtk.Window):
     # airmon-ng (start|stop) button | functionality
     def whenbutton_airmon_clicked(self, button, arg, interface, grid):
         if (arg=="start"):
-            command_airmon_start= f"gksudo airmon-ng start {interface}"
+            command_airmon_start= f"sudo airmon-ng start {interface}"
             output_airmon_start = os.popen(command_airmon_start).read()
             self.label_commands_log_output.set_text(output_airmon_start)
             self.label_commands_log.set_text(f"dbus-run-session airmon-ng start {interface} output:")
@@ -541,7 +541,7 @@ class airmonSsidWindow(Gtk.Window):
             self.new_interface=output_new_interface
             return output_airmon_start, self.new_interface
         elif (arg=="stop"):
-            command_airmon_stop= f"dbus-run-session gksudo airmon-ng stop {interface}"
+            command_airmon_stop= f"dbus-run-session sudo airmon-ng stop {interface}"
             output_airmon_stop= os.popen(command_airmon_stop).read()
             self.label_commands_log_output.set_text(output_airmon_stop)
             self.label_commands_log.set_text(f"dbus-run-session airmon-ng stop {interface} output:")
@@ -572,7 +572,7 @@ class airmonSsidWindow(Gtk.Window):
     # airmon-ng check button | functionality
     def whenbutton_airmon_check_clicked(self, button, grid):
         def airmonCheck():
-            command_airmon_check = "dbus-run-session gksudo airmon-ng check"
+            command_airmon_check = "dbus-run-session sudo airmon-ng check"
             output_airmon_check = os.popen(command_airmon_check).read()
             return output_airmon_check
 
@@ -584,7 +584,7 @@ class airmonSsidWindow(Gtk.Window):
     # airmon-ng check kill button | functionality
     def whenbutton_airmon_check_kill_clicked(self, button, grid):
         def airmonCheckKill():
-            command_airmon_check_kill = "dbus-run-session gksudo airmon-ng check kill"
+            command_airmon_check_kill = "dbus-run-session sudo airmon-ng check kill"
             output_airmon_check_kill = os.popen(command_airmon_check_kill).read()
             return output_airmon_check_kill
         self.label_commands_log_output.set_text(airmonCheckKill())
@@ -594,19 +594,19 @@ class airmonSsidWindow(Gtk.Window):
     # systemd button | functionality
     def whenbutton_systemd_clicked(self, button, arg):
         if (arg=="start"):
-            command_networkmanager_start= "dbus-run-session gksudo systemctl start NetworkManager"
+            command_networkmanager_start= "dbus-run-session sudo systemctl start NetworkManager"
             output_networkmanager_start = os.popen(command_networkmanager_start).read()
             self.label_commands_log_output.set_text("NetworkManager.service has been started")
             self.label_commands_log.set_text("systemctl start NetworkManager output:")
-            systemd_status=os.popen("dbus-run-session gksudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
+            systemd_status=os.popen("dbus-run-session sudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
             self.label_systemd_status.set_text(systemd_status)
             return output_networkmanager_start
         elif (arg=="stop"):
-            command_networkmanager_stop= "dbus-run-session gksudo systemctl stop NetworkManager"
+            command_networkmanager_stop= "dbus-run-session sudo systemctl stop NetworkManager"
             output_networkmanager_stop= os.popen(command_networkmanager_stop).read()
             self.label_commands_log_output.set_text("NetworkManager.service has been stopped")
             self.label_commands_log.set_text("systemctl stop NetworkManager output:")
-            systemd_status=os.popen("dbus-run-session gksudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
+            systemd_status=os.popen("dbus-run-session sudo systemctl status NetworkManager.service | awk '$1==\"Active:\" {print $0}'").read()
             self.label_systemd_status.set_text(systemd_status)
             return output_networkmanager_stop
 
