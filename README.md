@@ -68,38 +68,22 @@ After saving the handshake into a cap file, aircrack can be accessed from the ma
 ![Alt text](screenshots/8.png?raw=true "ScreenShot 8")
 
 ## Directory tree
-`
+```
 ├── LICENSE
-
 ├── README.md
-
 ├── requirements.txt
-
 ├── setup.py
-
 ├── aircrack-ng-gui
-
 │  ├── __init__.py
-
 │  └── aircrack-ng-gui.py
-
 └── screenshots
-
    ├── 1.png
-
    ├── 2.png
-
    ├── 3.png
-
    ├── 4.png
-
    ├── 5.png
-
    ├── 6.png
-
    ├── 7.png
-
    ├── 8.png
-
    └── 9.png
-`
+```
