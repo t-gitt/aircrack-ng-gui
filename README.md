@@ -67,12 +67,22 @@ After saving the handshake into a cap file, aircrack can be accessed from the ma
 
 ![Alt text](screenshots/8.png?raw=true "ScreenShot 8")
 
-## development stages
-* Initially, it is to support airmon-ng, where the user can start, stop and check the status of airmon-ng.
-
-* Access points scanning using "iw" with automatic bssid and channel extraction.
-
-* Airodump-ng with ability to choose the access point, and airodump-ng will output the data in .cap format  * still looking for a way to autodetect the handshake and terminate airodump-ng
-
-* An aircrack-ng window where the user can select a wordlist and the cap file that has the handshake. Then, the script will try to bruteforce the handshake using the wordlist
-
+## Directory tree
+.
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── setup.py
+├── aircrack-ng-gui
+│  ├── __init__.py
+│  └── aircrack-ng-gui.py
+└── screenshots
+   ├── 1.png
+   ├── 2.png
+   ├── 3.png
+   ├── 4.png
+   ├── 5.png
+   ├── 6.png
+   ├── 7.png
+   ├── 8.png
+   └── 9.png
