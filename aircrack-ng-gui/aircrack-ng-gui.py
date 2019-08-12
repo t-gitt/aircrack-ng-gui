@@ -353,7 +353,7 @@ class scanWindow(Gtk.Window):
             self.ssid= self.selection_listbox
             try:
                 self.bssid= os.popen(''' echo "{}" | grep -w -m 1 -B10 "{}" | grep -m 1 -E "BSS" | grep -E -o "^BSS.{}" | grep -oP "^BSS \K.*" '''.format(self.main_command_essid_output, self.selection_listbox, bssid_length)).read()
-                self.channel= os.popen(''' echo "{}" | grep -w -m 1 -A999 {} | grep -m 1 -E "DS Parameter set: channel" | grep -oP "DS Parameter set: channel \K.*" '''.format(self.main_command_essid_output, self.selection_listbox)).read()
+                self.channel= os.popen(''' echo "{}" | grep -w -m 1 -A999 "{}" | grep -m 1 -E "DS Parameter set: channel" | grep -oP "DS Parameter set: channel \K.*" '''.format(self.main_command_essid_output, self.selection_listbox)).read()
                 pass
             except Exception as Thread:
                 raise Thread
@@ -673,9 +673,9 @@ class airodumpWindow(Gtk.Window):
 
 
         # Terminal
-        self.label_terminal=Gtk.Label(label="input your desired terminal along with its excution argument. \n ex.1. xfce4-terminal -x \n ex.2. gnome-terminal -x")
-        self.entry_terminal=Gtk.Entry()
-        self.entry_terminal.set_text("xfce4-terminal -x")
+#        self.label_terminal=Gtk.Label(label="input your desired terminal along with its excution argument. \n ex.1. xfce4-terminal -x \n ex.2. gnome-terminal -x")
+#        self.entry_terminal=Gtk.Entry()
+#        self.entry_terminal.set_text("xfce4-terminal -x")
 
         # deauth
         self.label_entry_deauth=Gtk.Label(label="Input how many deauth you want to send")
@@ -696,8 +696,8 @@ class airodumpWindow(Gtk.Window):
         #grid 
         grid.attach(self.button_mainwindow, 0, 1, 1, 1)
         grid.attach(self.label_empty_space, 0, 2, 1, 1)
-        grid.attach(self.label_terminal, 1, 3, 1, 1)
-        grid.attach(self.entry_terminal, 1, 4, 1, 1)
+#        grid.attach(self.label_terminal, 1, 3, 1, 1)
+#        grid.attach(self.entry_terminal, 1, 4, 1, 1)
         grid.attach(self.label_target, 1, 5, 1, 1)
         grid.attach(self.entry_target_name, 1, 6, 1, 1)
         grid.attach(self.button_submit, 0, 7, 1, 1)
@@ -708,7 +708,8 @@ class airodumpWindow(Gtk.Window):
     # Submit button | functionality
     def submit(self, button, grid):
         try:
-            self.terminal = self.entry_terminal.get_text()
+#            self.terminal = self.entry_terminal.get_text()
+#            self.terminal = "xterm -hold -e"
             self.target = self.entry_target_name.get_text()
             try:
                 if os.path.isdir('{}/.aircrack-ng-gui/'.format(diruser)):
@@ -728,7 +729,8 @@ class airodumpWindow(Gtk.Window):
             grid.attach(self.label_entry_deauth, 1, 10, 1, 1)
             grid.attach(self.entry_deauth, 1, 11, 1, 1)
             self.show_all()
-            command_airodump="{} sudo airodump-ng --bssid '{}' -c '{}' --write '{}' {}".format(self.terminal, bssid, channel, path, self.new_interface)
+            command_airodump='''xterm -hold -e "sudo airodump-ng --bssid '{}' -c '{}' --write '{}' {} " '''.format(bssid, channel, path, self.new_interface)
+            print(command_airodump)
 #            command_airodump="{} 'airmon-ng check {}'".format(self.terminal, self.new_interface)
             command_airodump_run=os.popen(command_airodump)
             pass
@@ -811,9 +813,9 @@ class aircrackWindow(Gtk.Window):
         self.button_aircrack.connect("clicked", self.startAircrack)
 
         # Terminal
-        self.label_terminal=Gtk.Label(label="input your desired terminal along with its excution argument. \n ex.1. xfce4-terminal -x \n ex.2. gnome-terminal -x")
-        self.entry_terminal=Gtk.Entry()
-        self.entry_terminal.set_text("xfce4-terminal -x")
+#        self.label_terminal=Gtk.Label(label="input your desired terminal along with its excution argument. \n ex.1. xfce4-terminal -x \n ex.2. gnome-terminal -x")
+#        self.entry_terminal=Gtk.Entry()
+#        self.entry_terminal.set_text("xfce4-terminal -x")
 
         # Go back to Main Window
         self.button_mainwindow=Gtk.Button(label="Go to Main Window")
@@ -827,16 +829,16 @@ class aircrackWindow(Gtk.Window):
         grid.attach(self.button_wordlist, 1, 4, 1, 1)
         grid.attach(self.label_wordlist, 1, 5, 1, 1)
         grid.attach(self.label_wordlist_output, 2, 5, 1, 1)
-        grid.attach(self.label_terminal, 1, 7, 1, 1)
-        grid.attach(self.entry_terminal, 1, 8, 1, 1)
+#        grid.attach(self.label_terminal, 1, 7, 1, 1)
+#        grid.attach(self.entry_terminal, 1, 8, 1, 1)
         grid.attach(self.button_aircrack, 0, 9, 1, 1)
 
 
     # aircrack | functionality
     def startAircrack(self, button):
         try:
-            self.terminal = self.entry_terminal.get_text()
-            command_aircrack="{} sudo aircrack-ng -w '{}' '{}'".format(self.terminal, self.wordlist, self.cap)
+#            self.terminal = self.entry_terminal.get_text()
+            command_aircrack=''' xterm -hold -e "sudo aircrack-ng -w '{}' '{}' " '''.format(self.wordlist, self.cap)
             start_aircrack=os.popen(command_aircrack)
             pass
         except Exception as Thread:
