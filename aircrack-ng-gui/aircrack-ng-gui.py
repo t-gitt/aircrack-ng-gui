@@ -326,7 +326,7 @@ class scanWindow(Gtk.Window):
         # SSID List
         
         self.main_command_essid_output= os.popen("dbus-run-session sudo iw {} scan".format(interface)).read()
-        self.command_essid="echo '{}' | egrep 'SSID:' | awk '{}'".format(self.main_command_essid_output, "{print $2}")
+        self.command_essid=''' echo "{}" | egrep "SSID:" | awk "{}" '''.format(self.main_command_essid_output, "{print $2}")
         output_essid= os.popen(self.command_essid).read()
         print("\n"+output_essid+"\n")
         self.box_outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
@@ -352,8 +352,8 @@ class scanWindow(Gtk.Window):
             bssid_length = '{0,18}'
             self.ssid= self.selection_listbox
             try:
-                self.bssid= os.popen("echo '{}' | grep -w -m 1 -B10 '{}' | grep -m 1 -E 'BSS' | grep -E -o '^BSS.{}' | grep -oP '^BSS \K.*'".format(self.main_command_essid_output, self.selection_listbox, bssid_length)).read()
-                self.channel= os.popen("echo '{}' | grep -w -m 1 -A999 {} | grep -m 1 -E 'DS Parameter set: channel' | grep -oP 'DS Parameter set: channel \K.*'".format(self.main_command_essid_output, self.selection_listbox)).read()
+                self.bssid= os.popen(''' echo "{}" | grep -w -m 1 -B10 "{}" | grep -m 1 -E "BSS" | grep -E -o "^BSS.{}" | grep -oP "^BSS \K.*" '''.format(self.main_command_essid_output, self.selection_listbox, bssid_length)).read()
+                self.channel= os.popen(''' echo "{}" | grep -w -m 1 -A999 {} | grep -m 1 -E "DS Parameter set: channel" | grep -oP "DS Parameter set: channel \K.*" '''.format(self.main_command_essid_output, self.selection_listbox)).read()
                 pass
             except Exception as Thread:
                 raise Thread
