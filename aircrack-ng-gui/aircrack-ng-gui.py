@@ -326,13 +326,13 @@ class scanWindow(Gtk.Window):
         # SSID List
         
         self.main_command_essid_output= os.popen("dbus-run-session sudo iw {} scan".format(interface)).read()
-        self.command_essid=''' echo "{}" | egrep "SSID:" | grep -o " .*" '''.format(self.main_command_essid_output)
+        self.command_essid=''' echo "{}" | egrep "SSID:" | awk -F 'SSID:' '{}' '''.format(self.main_command_essid_output, "{print $2}")
         output_essid= os.popen(self.command_essid).read()
         print("\n"+output_essid+"\n")
         self.box_outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
 
         self.listbox = Gtk.ListBox()
-        items = output_essid.split()
+        items = output_essid.splitlines()
         for item in items:
             self.listbox.add(ListBoxRowWithData(item))
 
