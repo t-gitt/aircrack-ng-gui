@@ -326,7 +326,7 @@ class scanWindow(Gtk.Window):
         # SSID List
         
         self.main_command_essid_output= os.popen("dbus-run-session sudo iw {} scan".format(interface)).read()
-        self.command_essid=''' echo "{}" | egrep "SSID:" | awk '{}' '''.format(self.main_command_essid_output, "{print $2}")
+        self.command_essid=''' echo "{}" | egrep "SSID:" | grep -o " .*" '''.format(self.main_command_essid_output)
         output_essid= os.popen(self.command_essid).read()
         print("\n"+output_essid+"\n")
         self.box_outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
