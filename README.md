@@ -20,7 +20,7 @@ Performing a bruteforce attack on WPA/WPA2 networks using [aircrack-ng](https://
 
 
 ### To Manually Run The Script
-* make sure [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) is installed
+* make sure [aircrack-ng](https://www.github.com/aircrack-ng/aircrack-ng) & `xterm` are installed
 * clone the repo
 * `cd aircrack-ng-gui/`
 * install dependencies by `pip install -r requirements.txt` 
