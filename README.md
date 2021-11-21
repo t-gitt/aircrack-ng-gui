@@ -67,6 +67,9 @@ After saving the handshake into a cap file, aircrack can be accessed from the ma
 
 ![Alt text](screenshots/8.png?raw=true "ScreenShot 8")
 
+## Donations
+![bitcoin](https://raw.githubusercontent.com/t-gitt/aircrack-ng-gui/master/bitcoin-address.txt)
+
 ## Directory tree
 ```
 ├── LICENSE
